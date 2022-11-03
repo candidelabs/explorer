@@ -1,6 +1,5 @@
 import express, { Router } from "express";
 import addressRoute from "./address.route";
-import gasRoute from "./gas.route";
 import swapRoute from "./swap.route";
 
 const router = express.Router();
@@ -12,7 +11,6 @@ type Route = {
 
 const defaultRoutes: Array<Route> = [
   { path: "/address", route: addressRoute },
-  { path: "/gas", route: gasRoute },
   { path: "/swap", route: swapRoute },
 ];
 
