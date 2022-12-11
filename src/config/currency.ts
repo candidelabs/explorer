@@ -1,4 +1,12 @@
-export type CurrencySymbols = "UNI" | "ETH" | "CTT" | "WETH" | "USDT";
+import {StringUnion} from "../utils/stringUnion";
+
+export const CurrencySymbols = StringUnion(
+  "UNI",
+  "ETH",
+  "CTT",
+  "USDT",
+);
+export type CurrencySymbols = typeof CurrencySymbols.type;
 
 type CurrencyMeta = {
   decimals: number;
@@ -6,7 +14,7 @@ type CurrencyMeta = {
 
 export const ValidQuoteCurrenies: Array<CurrencySymbols> = ["USDT"];
 
-export const ValidCurrencies: Array<CurrencySymbols> = ["UNI", "ETH", "CTT", "WETH"];
+export const ValidCurrencies: Array<CurrencySymbols> = ["UNI", "ETH", "CTT"];
 
 export const CurrencyMeta: Record<CurrencySymbols, CurrencyMeta> = {
   UNI: {
@@ -16,9 +24,6 @@ export const CurrencyMeta: Record<CurrencySymbols, CurrencyMeta> = {
     decimals: 6,
   },
   ETH: {
-    decimals: 18,
-  },
-  WETH: {
     decimals: 18,
   },
   CTT: {

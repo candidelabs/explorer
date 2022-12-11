@@ -30,9 +30,6 @@ export const NetworksConfig: Record<Networks, NetworksConfig> = {
       UNI: {
         address: "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
       },
-      WETH: {
-        address: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
-      },
       CTT: {
         address: "0xFaaFfdCBF13f879EA5D5594C4aEBcE0F5dE733ca",
       },
@@ -42,6 +39,11 @@ export const NetworksConfig: Record<Networks, NetworksConfig> = {
     },
   },
 };
+
+export const getCurrencyFromAddress = (address: string, network: Networks) => {
+  const currency = Object.entries(NetworksConfig[network].currencies).find((data) => data[1].address.toLowerCase() === address.toLowerCase());
+  return currency?.[0] ?? address;
+}
 
 const populateWETH9 = () => {
   ValidNetworks.forEach((network) => {

@@ -1,9 +1,8 @@
 import { ethers, BigNumberish } from "ethers";
 import { catchAsync, convertToQuoteCurrency } from "../utils";
-import { CurrencySymbols, Networks } from "../config";
+import { CurrencySymbols, getCurrencyFromAddress, Networks, NetworksConfig } from "../config";
 import * as AlchemyService from "../services/alchemy.service";
 import * as QuoteService from "../services/quote.service";
-import {getLatestBinanceQuotes} from "../services/binance.service";
 
 interface RequestBody {
   quoteCurrency: CurrencySymbols;
@@ -17,7 +16,7 @@ interface WalletBalance {
 }
 
 interface CurrencyBalance {
-  currency: CurrencySymbols;
+  currency: string;
   quoteCurrency: CurrencySymbols;
   balance: BigNumberish;
   currentBalanceInQuoteCurrency: BigNumberish;
@@ -37,10 +36,9 @@ export const post = catchAsync(async (req, res) => {
     currentCurrencyBalances,
     currentQuotes,
   ] = await Promise.all([
-    AlchemyService.getCurrencyBalances(network, address, currencies),
-    QuoteService.getClosestQuotes(quoteCurrency, currencies),
+    AlchemyService.getCurrencyBalances(network, address),
+    QuoteService.getClosestQuotes(quoteCurrency, currencies, network),
   ]);
-
   const response: PostResponse = {
     walletBalance: currencies.reduce(
       (prev, curr) => {
@@ -49,10 +47,10 @@ export const post = catchAsync(async (req, res) => {
           currentBalance: ethers.BigNumber.from(prev.currentBalance)
             .add(
               convertToQuoteCurrency(
-                currentCurrencyBalances[curr],
+                currentCurrencyBalances[NetworksConfig[network].currencies[curr].address.toLowerCase()],
                 curr,
                 quoteCurrency,
-                currentQuotes[curr]
+                currentQuotes[NetworksConfig[network].currencies[curr].address.toLowerCase()]
               )
             )
             .toString(),
@@ -63,18 +61,15 @@ export const post = catchAsync(async (req, res) => {
         currentBalance: "0",
       }
     ),
-
-    currencies: currencies.map((currency) => ({
-      currency,
+    currencies: Object.entries(currentCurrencyBalances).map((data) => ({
+      currency: data[0],
       quoteCurrency,
-      balance: ethers.BigNumber.from(
-        currentCurrencyBalances[currency]
-      ).toString(),
+      balance: ethers.BigNumber.from(data[1]).toString(),
       currentBalanceInQuoteCurrency: convertToQuoteCurrency(
-        currentCurrencyBalances[currency],
-        currency,
+        data[1],
+        getCurrencyFromAddress(data[0], network),
         quoteCurrency,
-        currentQuotes[currency]
+        currentQuotes[data[0].toLowerCase()]
       ).toString(),
     })),
   };
