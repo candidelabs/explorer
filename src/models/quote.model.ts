@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+// @ts-ignore
 import toJSON from "@meanie/mongoose-to-json";
 import { CurrencySymbols } from "../config";
 

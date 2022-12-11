@@ -1,8 +1,8 @@
 import Quote, { IQuote } from "../models/quote.model";
-import { CurrencySymbols, ValidQuoteCurrenies } from "../config";
+import { CurrencySymbols, Networks, NetworksConfig, ValidQuoteCurrenies } from "../config";
 import { dateForTimePeriod } from "../utils";
 
-type CurrencyQuoteMap = Record<CurrencySymbols, number>;
+type CurrencyQuoteMap = Record<string, number>;
 
 const BASE_CURRENCY_QUOTE_MAP: CurrencyQuoteMap = {
   UNI: 0,
@@ -21,6 +21,7 @@ export const saveBulk = async (quotes: Array<IQuote>) => {
 export const getClosestQuotes = async (
   quoteCurrency: CurrencySymbols,
   currencies: Array<CurrencySymbols>,
+  network: Networks,
 ): Promise<CurrencyQuoteMap> => {
   if (!ValidQuoteCurrenies.includes(quoteCurrency)) {
     throw new Error("Invalid quote currency");
@@ -49,7 +50,7 @@ export const getClosestQuotes = async (
     (prev, curr) => {
       return {
         ...prev,
-        [curr.currency]: curr.price,
+        [NetworksConfig[network].currencies[curr.currency].address.toLowerCase()]: curr.price,
       };
     },
     { ...BASE_CURRENCY_QUOTE_MAP, [quoteCurrency]: 1 }

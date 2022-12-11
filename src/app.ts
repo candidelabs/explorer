@@ -3,6 +3,7 @@ import * as Sentry from "@sentry/node";
 import * as Tracing from "@sentry/tracing";
 import isURL from "validator/lib/isURL";
 import helmet from "helmet";
+// @ts-ignore
 import xss from "xss-clean";
 import mongoSanitize from "express-mongo-sanitize";
 import compression from "compression";
